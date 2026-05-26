@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SoundItOut · Hebrew screenshot translator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Frank+Ruhl+Libre:wght@300;400;500;700&display=swap" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #f0eee9; }
+    body { font-family: 'Geist', -apple-system, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+  // ─────────────────────────────────────────────────────────────
+  // DATA
+  // ─────────────────────────────────────────────────────────────
+  const SAMPLE_PHRASE = {
+    context: 'Greeting card · received via WhatsApp',
+    hebrew: 'שבת שלום ומבורך',
+    translation: 'A peaceful and blessed Sabbath',
+    glossNote: 'A common Friday greeting, exchanged between sundown and Saturday night.',
+    words: [
+      {
+        he: 'שבת', gloss: 'Sabbath', simple: 'sha-BAT', ipa: 'ʃaˈbat', stress: 1,
+        syllables: [{ simple: 'sha', ipa: 'ʃa', chars: 'ש' }, { simple: 'BAT', ipa: 'bat', chars: 'בת' }],
+        root: 'ש־ב־ת', rootMeaning: 'to rest, to cease',
+      },
+      {
+        he: 'שלום', gloss: 'peace', simple: 'sha-LOM', ipa: 'ʃaˈlom', stress: 1,
+        syllables: [{ simple: 'sha', ipa: 'ʃa', chars: 'ש' }, { simple: 'LOM', ipa: 'lom', chars: 'לום' }],
+        root: 'ש־ל־ם', rootMeaning: 'wholeness, completeness',
+      },
+      {
+        he: 'ומבורך', gloss: 'and blessed', simple: 'u-me-vo-RAKH', ipa: 'umevoˈʁax', stress: 3,
+        syllables: [
+          { simple: 'u', ipa: 'u', chars: 'ו' }, { simple: 'me', ipa: 'me', chars: 'מ' },
+          { simple: 'vo', ipa: 'vo', chars: 'בו' }, { simple: 'RAKH', ipa: 'ʁax', chars: 'רך' },
+        ],
+        root: 'ב־ר־ך', rootMeaning: 'to bless, to kneel',
+      },
+    ],
+  };
+
+  const DICT_ENTRY = {
+    he: 'שלום', translit: 'shalom', ipa: 'ʃaˈlom', partOfSpeech: 'noun, masculine',
+    primary: 'peace; wholeness; well-being',
+    root: { letters: 'ש־ל־ם', translit: 'sh-l-m', meaning: 'to be whole, complete, sound' },
+    senses: [
+      { label: 'greeting', text: 'Used as both "hello" and "goodbye" in modern Israeli Hebrew.' },
+      { label: 'state', text: 'A condition of peace, safety, and prosperity — not merely the absence of conflict.' },
+      { label: 'theology', text: 'In Biblical use, an attribute of God and a covenantal blessing (Numbers 6:26).' },
+    ],
+    family: [
+      { he: 'שָׁלֵם', translit: 'shalem', gloss: 'whole, complete' },
+      { he: 'שִׁלֵּם', translit: 'shilem', gloss: 'to pay, to repay' },
+      { he: 'מֻשְׁלָם', translit: 'mushlam', gloss: 'perfect, flawless' },
+      { he: 'תַּשְׁלוּם', translit: 'tashlum', gloss: 'payment, installment' },
+    ],
+    cognates: [
+      { lang: 'Arabic', form: 'سَلام', translit: 'salām' },
+      { lang: 'Aramaic', form: 'שְׁלָמָא', translit: 'shlama' },
+      { lang: 'Akkadian', form: '𒁲', translit: 'shulmu' },
+    ],
+    firstAttested: 'Biblical Hebrew · Genesis 15:15',
+    example: { he: 'לֶךְ לְשָׁלוֹם', translit: 'lekh le-shalom', gloss: '"Go in peace" — said when parting.' },
+  };
+
+  const HISTORY = [
+    { he: 'שבת שלום ומבורך', translit: 'sha-BAT sha-LOM u-me-vo-RAKH', gloss: 'A peaceful and blessed Sabbath', when: 'Just now', dateLabel: 'Today', source: 'iMessage', context: 'From Mom · Fri 5:42 PM', words: 3 },
+    { he: 'ברוכים הבאים', translit: 'bru-KHIM ha-ba-IM', gloss: 'Welcome', when: 'Yesterday', dateLabel: 'This week', source: 'Photo', context: 'Ben Gurion Airport · arrivals hall', words: 2 },
+    { he: 'תודה רבה', translit: 'to-DAH ra-BAH', gloss: 'Thank you very much', when: '2 days ago', dateLabel: 'This week', source: 'Photo', context: 'Café Aroma receipt', words: 2 },
+    { he: 'חג שמח', translit: 'CHAG sa-ME-ach', gloss: 'Happy holiday', when: 'Last week', dateLabel: 'Earlier', source: 'WhatsApp', context: 'Family group · Aunt Miri', words: 2 },
+    { he: 'רחוב דיזנגוף', translit: 're-KHOV di-zen-GOFF', gloss: 'Dizengoff Street', when: 'Last week', dateLabel: 'Earlier', source: 'Maps', context: 'Tel Aviv · pinned location', words: 2 },
+    { he: 'מה שלומך?', translit: 'mah shlom-KHA', gloss: 'How are you?', when: '3 weeks ago', dateLabel: 'Earlier', source: 'iMessage', context: 'From cousin David', words: 2 },
+  ];
+
+  const SOURCE_META = {
+    iMessage: { color: '#3A8DFF', tag: 'MSG' },
+    WhatsApp: { color: '#25D366', tag: 'WA' },
+    Photo:    { color: '#7A6D55', tag: 'IMG' },
+    Maps:     { color: '#E64C3C', tag: 'MAP' },
+  };
+
+  const REGIONS = [
+    { id: 'modern',    label: 'Modern Israeli', sub: 'Tel Aviv / standard',       sample: 'sha-LOM'  },
+    { id: 'sephardic', label: 'Sephardic',       sub: 'Iberian & Mizrahi roots',   sample: 'sha-LOHM' },
+    { id: 'ashkenazi', label: 'Ashkenazi',        sub: 'European liturgical',       sample: 'SHO-loim' },
+    { id: 'yemenite',  label: 'Yemenite',         sub: 'Closest to ancient',        sample: 'sha-LŌM'  },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // TWEAKS
+  // ─────────────────────────────────────────────────────────────
+  const __TWEAKS_STYLE = `
+    .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+      max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+      background:rgba(250,249,247,.78);color:#29261b;
+      -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+      border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+      box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+      font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+    .twk-hd{display:flex;align-items:center;justify-content:space-between;
+      padding:10px 8px 10px 14px;cursor:move;user-select:none}
+    .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+    .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+      width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+    .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+    .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+      overflow-y:auto;overflow-x:hidden;min-height:0}
+    .twk-row{display:flex;flex-direction:column;gap:5px}
+    .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+    .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.72)}
+    .twk-lbl>span:first-child{font-weight:500}
+    .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+      color:rgba(41,38,27,.45);padding:10px 0 0}
+    .twk-sect:first-child{padding-top:0}
+    .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);user-select:none}
+    .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+      background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+      transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+    .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+      background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+      border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2}
+    .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+      background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+    .twk-toggle[data-on="1"]{background:#34c759}
+    .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+      background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+    .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+  `;
+
+  function useTweaks(defaults) {
+    const [values, setValues] = React.useState(defaults);
+    const setTweak = React.useCallback((keyOrEdits, val) => {
+      const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null ? keyOrEdits : { [keyOrEdits]: val };
+      setValues((prev) => ({ ...prev, ...edits }));
+    }, []);
+    return [values, setTweak];
+  }
+
+  function TweaksPanel({ title = 'Tweaks', children }) {
+    const [open, setOpen] = React.useState(false);
+    const dragRef = React.useRef(null);
+    const offsetRef = React.useRef({ x: 16, y: 16 });
+    const PAD = 16;
+
+    const clampToViewport = React.useCallback(() => {
+      const panel = dragRef.current;
+      if (!panel) return;
+      const w = panel.offsetWidth, h = panel.offsetHeight;
+      offsetRef.current = {
+        x: Math.min(Math.max(PAD, window.innerWidth - w - PAD), Math.max(PAD, offsetRef.current.x)),
+        y: Math.min(Math.max(PAD, window.innerHeight - h - PAD), Math.max(PAD, offsetRef.current.y)),
+      };
+      panel.style.right = offsetRef.current.x + 'px';
+      panel.style.bottom = offsetRef.current.y + 'px';
+    }, []);
+
+    React.useEffect(() => {
+      const onMsg = (e) => {
+        const t = e?.data?.type;
+        if (t === '__activate_edit_mode') setOpen(true);
+        else if (t === '__deactivate_edit_mode') setOpen(false);
+      };
+      window.addEventListener('message', onMsg);
+      window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+      return () => window.removeEventListener('message', onMsg);
+    }, []);
+
+    const onDragStart = (e) => {
+      const panel = dragRef.current;
+      if (!panel) return;
+      const r = panel.getBoundingClientRect();
+      const sx = e.clientX, sy = e.clientY;
+      const startRight = window.innerWidth - r.right;
+      const startBottom = window.innerHeight - r.bottom;
+      const move = (ev) => {
+        offsetRef.current = { x: startRight - (ev.clientX - sx), y: startBottom - (ev.clientY - sy) };
+        clampToViewport();
+      };
+      const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+      window.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', up);
+    };
+
+    if (!open) return null;
+    return (
+      <>
+        <style>{__TWEAKS_STYLE}</style>
+        <div ref={dragRef} className="twk-panel" style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+          <div className="twk-hd" onMouseDown={onDragStart}>
+            <b>{title}</b>
+            <button className="twk-x" onMouseDown={(e) => e.stopPropagation()} onClick={() => setOpen(false)}>✕</button>
+          </div>
+          <div className="twk-body">{children}</div>
+        </div>
+      </>
+    );
+  }
+
+  function TweakSection({ label }) {
+    return <div className="twk-sect">{label}</div>;
+  }
+
+  function TweakToggle({ label, value, onChange }) {
+    return (
+      <div className="twk-row twk-row-h">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+                role="switch" aria-checked={!!value} onClick={() => onChange(!value)}><i /></button>
+      </div>
+    );
+  }
+
+  function TweakRadio({ label, value, options, onChange }) {
+    const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+    const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+    const n = opts.length;
+    return (
+      <div className="twk-row">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <div className="twk-seg" role="radiogroup">
+          <div className="twk-seg-thumb"
+               style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`, width: `calc((100% - 4px) / ${n})` }} />
+          {opts.map((o) => (
+            <button key={o.value} type="button" role="radio" aria-checked={o.value === value}
+                    onClick={() => onChange(o.value)}>{o.label}</button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // iOS FRAME
+  // ─────────────────────────────────────────────────────────────
+  function IOSStatusBar({ dark = false }) {
+    const c = dark ? '#fff' : '#000';
+    return (
+      <div style={{ display: 'flex', gap: 154, alignItems: 'center', justifyContent: 'center', padding: '21px 24px 19px', boxSizing: 'border-box', position: 'relative', zIndex: 20, width: '100%' }}>
+        <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 1.5 }}>
+          <span style={{ fontFamily: '-apple-system, "SF Pro", system-ui', fontWeight: 590, fontSize: 17, lineHeight: '22px', color: c }}>9:41</span>
+        </div>
+        <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, paddingTop: 1 }}>
+          <svg width="19" height="12" viewBox="0 0 19 12">
+            <rect x="0" y="7.5" width="3.2" height="4.5" rx="0.7" fill={c}/>
+            <rect x="4.8" y="5" width="3.2" height="7" rx="0.7" fill={c}/>
+            <rect x="9.6" y="2.5" width="3.2" height="9.5" rx="0.7" fill={c}/>
+            <rect x="14.4" y="0" width="3.2" height="12" rx="0.7" fill={c}/>
+          </svg>
+          <svg width="17" height="12" viewBox="0 0 17 12">
+            <path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill={c}/>
+            <path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill={c}/>
+            <circle cx="8.5" cy="10.5" r="1.5" fill={c}/>
+          </svg>
+          <svg width="27" height="13" viewBox="0 0 27 13">
+            <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke={c} strokeOpacity="0.35" fill="none"/>
+            <rect x="2" y="2" width="20" height="9" rx="2" fill={c}/>
+            <path d="M25 4.5V8.5C25.8 8.2 26.5 7.2 26.5 6.5C26.5 5.8 25.8 4.8 25 4.5Z" fill={c} fillOpacity="0.4"/>
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  function IOSDevice({ children, width = 390, height = 844, dark = false }) {
+    return (
+      <div style={{
+        width, height, borderRadius: 48, overflow: 'hidden', position: 'relative',
+        background: dark ? '#000' : '#F2F2F7',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)',
+        fontFamily: '-apple-system, system-ui, sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+      }}>
+        {/* Dynamic island */}
+        <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50 }} />
+        {/* Status bar */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+          <IOSStatusBar dark={dark} />
+        </div>
+        {/* Content */}
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflow: 'auto' }}>{children}</div>
+        </div>
+        {/* Home indicator */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60, height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 8, pointerEvents: 'none' }}>
+          <div style={{ width: 139, height: 5, borderRadius: 100, background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.25)' }} />
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // PAPER DESIGN TOKENS + SHARED BITS
+  // ─────────────────────────────────────────────────────────────
+  const paperTokens = (dark) => ({
+    bg:         dark ? '#16130F' : '#FAF7F1',
+    card:       dark ? '#1F1B16' : '#FFFFFF',
+    ink:        dark ? '#F2EDE3' : '#1A1714',
+    muted:      dark ? 'rgba(242,237,227,0.62)' : 'rgba(26,23,20,0.62)',
+    faint:      dark ? 'rgba(242,237,227,0.36)' : 'rgba(26,23,20,0.36)',
+    hair:       dark ? 'rgba(242,237,227,0.12)' : 'rgba(26,23,20,0.10)',
+    accent:     '#B85C40',
+    accentSoft: dark ? 'rgba(184,92,64,0.18)' : 'rgba(184,92,64,0.12)',
+  });
+
+  const PFont = {
+    display: '"Instrument Serif", Georgia, serif',
+    body:    '"Geist", -apple-system, system-ui, sans-serif',
+    he:      '"Frank Ruhl Libre", "Times New Roman", serif',
+    mono:    '"Geist Mono", ui-monospace, monospace',
+  };
+
+  function PaperHeader({ t, label, title, trailing, onBack }) {
+    return (
+      <div style={{ padding: '54px 24px 14px', display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+        {onBack && (
+          <button onClick={onBack} aria-label="Back" style={{
+            width: 36, height: 36, borderRadius: 18, border: `1px solid ${t.hair}`,
+            background: 'transparent', color: t.ink, cursor: 'pointer', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            alignSelf: 'flex-start', marginTop: 12, marginRight: 2, flexShrink: 0,
+          }}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2L4 6l4 4"/></svg>
+          </button>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase', color: t.muted, marginBottom: 6 }}>{label}</div>
+          <div style={{ fontFamily: PFont.display, fontSize: 32, lineHeight: 1, color: t.ink, letterSpacing: -0.4 }}>{title}</div>
+        </div>
+        {trailing}
+      </div>
+    );
+  }
+
+  function PaperIconButton({ t, onClick, children, 'aria-label': ariaLabel }) {
+    return (
+      <button onClick={onClick} aria-label={ariaLabel} style={{
+        width: 36, height: 36, borderRadius: 18, border: `1px solid ${t.hair}`,
+        background: 'transparent', color: t.ink, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+      }}>{children}</button>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SCREEN 1 — UPLOAD
+  // ─────────────────────────────────────────────────────────────
+  function PaperUpload({ dark, density, onTranslate, onSettings, onPickRecent, onHistory }) {
+    const t = paperTokens(dark);
+    const pad = density === 'compact' ? 14 : 20;
+
+    const [scan, setScan] = React.useState(0.3);
+    React.useEffect(() => {
+      let r, t0 = performance.now();
+      const tick = (now) => { setScan(((now - t0) / 2400) % 1); r = requestAnimationFrame(tick); };
+      r = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(r);
+    }, []);
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: PFont.body, display: 'flex', flexDirection: 'column' }}>
+        <PaperHeader t={t} label="01 · CAPTURE" title="What did you find?"
+          trailing={
+            <PaperIconButton t={t} onClick={onSettings} aria-label="Settings">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </PaperIconButton>
+          }
+        />
+
+        <div style={{ padding: '0 24px', flex: 1, display: 'flex', flexDirection: 'column', gap: pad }}>
+          {/* Screenshot scan card */}
+          <div style={{ background: t.card, borderRadius: 22, padding: 18, border: `1px solid ${t.hair}`, boxShadow: dark ? 'none' : '0 1px 0 rgba(26,23,20,0.04)' }}>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.2, color: t.muted, textTransform: 'uppercase', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Screenshot · IMG_0428</span>
+              <span style={{ color: t.accent, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: 3, background: t.accent, display: 'inline-block' }}/>
+                READING
+              </span>
+            </div>
+            <div style={{ position: 'relative', borderRadius: 14, overflow: 'hidden', background: dark ? '#0E0C09' : '#F0EBE0', aspectRatio: '4 / 3', border: `1px solid ${t.hair}` }}>
+              <div style={{ position: 'absolute', inset: 0, padding: '18px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                <div style={{ position: 'relative', maxWidth: '80%' }}>
+                  <div style={{ background: '#3A8DFF', color: '#fff', borderRadius: 18, padding: '10px 14px', fontFamily: PFont.he, fontSize: 22, direction: 'rtl', lineHeight: 1.3 }}>
+                    שבת שלום ומבורך 🌿
+                  </div>
+                  <div style={{ position: 'absolute', inset: -6, border: `1.5px dashed ${t.accent}`, borderRadius: 10, background: `${t.accent}10`, pointerEvents: 'none' }}/>
+                </div>
+                <div style={{ fontFamily: PFont.mono, fontSize: 9, color: t.muted, marginTop: 14 }}>Fri 5:42 PM</div>
+              </div>
+              <div style={{ position: 'absolute', left: 0, right: 0, height: 2, top: `${scan * 100}%`, background: t.accent, boxShadow: `0 0 18px ${t.accent}, 0 0 4px ${t.accent}` }}/>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 14, alignItems: 'center' }}>
+              <div style={{ fontFamily: PFont.mono, fontSize: 11, color: t.muted }}>3 words · 7 syllables</div>
+              <button onClick={onTranslate} style={{ background: t.accent, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 999, fontFamily: PFont.body, fontSize: 13, fontWeight: 500, cursor: 'pointer', letterSpacing: 0.1 }}>Translate ↗</button>
+            </div>
+          </div>
+
+          {/* Recent captures */}
+          <div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 10, display: 'flex', justifyContent: 'space-between' }}>
+              <span>Recent captures</span>
+              <button onClick={onHistory} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit', color: t.accent }}>view all →</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 2 : 6 }}>
+              {HISTORY.slice(0, 3).map((h, i) => (
+                <div key={i} onClick={() => onPickRecent && onPickRecent(i)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: `${density === 'compact' ? 10 : 14}px 4px`, borderBottom: i < 2 ? `1px solid ${t.hair}` : 'none', cursor: 'pointer' }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 8, background: t.accentSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: PFont.he, fontSize: 18, color: t.accent, direction: 'rtl' }}>{h.he.slice(0, 1)}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                      <span style={{ fontFamily: PFont.he, fontSize: 16, direction: 'rtl', color: t.ink }}>{h.he}</span>
+                      <span style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint }}>{h.when}</span>
+                    </div>
+                    <div style={{ fontSize: 13, color: t.muted, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <em style={{ fontFamily: PFont.display, fontStyle: 'italic' }}>{h.gloss}</em>
+                      <span style={{ color: t.faint }}> · {h.context}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ flex: 1 }} />
+
+          {/* Upload CTA */}
+          <button onClick={onTranslate} style={{ width: '100%', background: 'transparent', border: `1.5px dashed ${t.accent}`, borderRadius: 18, padding: '18px 16px', cursor: 'pointer', fontFamily: PFont.body, fontSize: 14, color: t.accent, fontWeight: 500, letterSpacing: 0.2, marginBottom: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 11V2M4 6l4-4 4 4M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2"/>
+            </svg>
+            Upload a Hebrew screenshot
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SCREEN 2 — RESULT
+  // ─────────────────────────────────────────────────────────────
+  function PaperResult({ dark, density, phonetic = 'simple', setPhonetic, onBack, onLookup, onPractice, active = 1, setActive }) {
+    const t = paperTokens(dark);
+    const pad = density === 'compact' ? 12 : 18;
+    const p = SAMPLE_PHRASE;
+    const word = p.words[active];
+    const showSimple = phonetic === 'simple' || phonetic === 'both';
+    const showIpa    = phonetic === 'ipa'    || phonetic === 'both';
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: PFont.body, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+        <PaperHeader t={t} label={p.context} title="Translated" onBack={onBack}
+          trailing={
+            <div style={{ display: 'flex', gap: 8, alignSelf: 'flex-start', marginTop: 12 }}>
+              <PaperIconButton t={t} aria-label="Save">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 1v12l4-3 4 3V1z"/></svg>
+              </PaperIconButton>
+              <PaperIconButton t={t} aria-label="Share">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1v9M4 4l3-3 3 3M2 9v3a1 1 0 001 1h8a1 1 0 001-1V9"/></svg>
+              </PaperIconButton>
+            </div>
+          }
+        />
+
+        <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: pad, paddingBottom: 50 }}>
+          {/* Source thumbnail */}
+          <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 16, padding: 12, display: 'flex', gap: 12, alignItems: 'center' }}>
+            <div style={{ width: 56, height: 56, borderRadius: 10, flexShrink: 0, background: '#3A8DFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: PFont.he, fontSize: 13, color: '#fff', direction: 'rtl', padding: 4 }}>שבת</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.muted, letterSpacing: 1 }}>SOURCE</div>
+              <div style={{ fontSize: 13, color: t.ink, marginTop: 2 }}>iMessage · Mom</div>
+            </div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint }}>FRI 5:42</div>
+          </div>
+
+          {/* Hebrew + translation */}
+          <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 22, padding: '22px 20px' }}>
+            <div style={{ direction: 'rtl', display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+              {p.words.map((w, i) => (
+                <button key={i} onClick={() => setActive(i)} style={{ background: i === active ? t.accentSoft : 'transparent', border: 'none', padding: '4px 8px', borderRadius: 8, cursor: 'pointer', fontFamily: PFont.he, fontSize: 36, lineHeight: 1.15, color: i === active ? t.accent : t.ink, fontWeight: 500 }}>{w.he}</button>
+              ))}
+            </div>
+            <div style={{ height: 1, background: t.hair, margin: '18px 0' }}/>
+            <div style={{ fontFamily: PFont.display, fontSize: 22, lineHeight: 1.3, color: t.ink, fontStyle: 'italic' }}>"{p.translation}"</div>
+            <div style={{ fontSize: 13, color: t.muted, marginTop: 8, lineHeight: 1.5 }}>{p.glossNote}</div>
+          </div>
+
+          {/* Phonetic breakdown */}
+          <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 22, padding: '18px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase' }}>Pronounce</div>
+              <div style={{ display: 'flex', background: t.bg, padding: 3, borderRadius: 999, border: `1px solid ${t.hair}` }}>
+                {[['simple','Easy'],['both','Both'],['ipa','IPA']].map(([k,l]) => (
+                  <button key={k} onClick={() => setPhonetic && setPhonetic(k)} style={{ background: phonetic===k ? t.ink : 'transparent', color: phonetic===k ? t.bg : t.muted, border: 'none', padding: '4px 10px', borderRadius: 999, fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1, cursor: 'pointer', textTransform: 'uppercase' }}>{l}</button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 10 : 14 }}>
+              {p.words.map((w, i) => (
+                <div key={i} onClick={() => setActive && setActive(i)} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 28px', gap: 12, alignItems: 'center', cursor: 'pointer', opacity: i === active ? 1 : 0.55 }}>
+                  <div style={{ fontFamily: PFont.he, fontSize: 22, direction: 'rtl', color: t.ink, textAlign: 'right' }}>{w.he}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {showSimple && (
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'baseline' }}>
+                        {w.syllables.map((s, si) => (
+                          <React.Fragment key={si}>
+                            {si > 0 && <span style={{ color: t.faint, fontFamily: PFont.mono }}>·</span>}
+                            <span style={{ fontFamily: PFont.mono, fontSize: 14, color: si === w.stress ? t.accent : t.ink, fontWeight: si === w.stress ? 600 : 400, letterSpacing: 0.2 }}>{s.simple}</span>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
+                    {showIpa && (
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'baseline' }}>
+                        {w.syllables.map((s, si) => (
+                          <React.Fragment key={si}>
+                            {si > 0 && <span style={{ color: t.faint, fontFamily: PFont.mono, fontSize: 11 }}>·</span>}
+                            <span style={{ fontFamily: PFont.mono, fontSize: showSimple ? 11 : 14, color: si === w.stress ? t.accent : t.muted, fontWeight: si === w.stress ? 600 : 400, letterSpacing: 0.2 }}>{s.ipa}</span>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {i === active && (
+                    <button onClick={(e) => { e.stopPropagation(); onPractice && onPractice(i); }} aria-label="Practice" style={{ width: 28, height: 28, borderRadius: 14, border: 'none', background: t.accent, color: '#fff', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M3 1v8l5-4z"/></svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ height: 1, background: t.hair, margin: '16px 0 14px' }}/>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.muted, letterSpacing: 1.2, textTransform: 'uppercase' }}>Root · {word.root}</div>
+                <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 16, color: t.ink, marginTop: 4 }}>{word.rootMeaning}</div>
+              </div>
+              <button onClick={() => onPractice && onPractice(active)} aria-label="Practice syllables" style={{ background: t.accent, color: '#fff', border: 'none', borderRadius: 999, padding: '0 16px', height: 44, cursor: 'pointer', fontFamily: PFont.body, fontSize: 12, fontWeight: 500, letterSpacing: 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1v10l7-5z"/></svg>
+                Practice
+              </button>
+            </div>
+          </div>
+
+          {/* Action row */}
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            <button style={{ flex: 1, background: 'transparent', color: t.ink, border: `1px solid ${t.hair}`, padding: '14px 16px', borderRadius: 14, fontFamily: PFont.body, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Save phrase</button>
+            <button onClick={onLookup} style={{ flex: 1, background: t.ink, color: t.bg, border: 'none', padding: '14px 16px', borderRadius: 14, fontFamily: PFont.body, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Look up "{word.gloss}"</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SCREEN 3 — DICTIONARY
+  // ─────────────────────────────────────────────────────────────
+  function PaperDictionary({ dark, density, onBack }) {
+    const t = paperTokens(dark);
+    const d = DICT_ENTRY;
+    const pad = density === 'compact' ? 12 : 18;
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: PFont.body, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+        <div style={{ padding: '54px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {onBack && (
+              <button onClick={onBack} aria-label="Back" style={{ width: 30, height: 30, borderRadius: 15, border: `1px solid ${t.hair}`, background: 'transparent', color: t.ink, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2L4 6l4 4"/></svg>
+              </button>
+            )}
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase' }}>DICTIONARY · ENTRY</div>
+          </div>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.muted }}>1 / 1,243</div>
+        </div>
+
+        {/* Hero */}
+        <div style={{ padding: '20px 24px 24px', borderBottom: `1px solid ${t.hair}` }}>
+          <div style={{ fontFamily: PFont.he, fontSize: 82, lineHeight: 1, color: t.ink, direction: 'rtl', letterSpacing: -2, fontWeight: 500 }}>{d.he}</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 12, flexWrap: 'wrap' }}>
+            <div style={{ fontFamily: PFont.display, fontSize: 28, fontStyle: 'italic', color: t.accent }}>{d.translit}</div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 12, color: t.muted }}>/{d.ipa}/</div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint, textTransform: 'uppercase', letterSpacing: 1 }}>{d.partOfSpeech}</div>
+          </div>
+          <div style={{ fontFamily: PFont.display, fontSize: 20, fontStyle: 'italic', color: t.ink, marginTop: 14, lineHeight: 1.3 }}>{d.primary}</div>
+        </div>
+
+        {/* Root */}
+        <div style={{ padding: '18px 24px', borderBottom: `1px solid ${t.hair}` }}>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 10 }}>Root</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontFamily: PFont.he, fontSize: 30, color: t.accent, direction: 'rtl', padding: '6px 14px', background: t.accentSoft, borderRadius: 10 }}>{d.root.letters}</div>
+            <div>
+              <div style={{ fontFamily: PFont.mono, fontSize: 11, color: t.muted, letterSpacing: 0.5 }}>{d.root.translit}</div>
+              <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 16, marginTop: 2 }}>{d.root.meaning}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Senses */}
+        <div style={{ padding: '18px 24px', borderBottom: `1px solid ${t.hair}` }}>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 12 }}>Senses</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 10 : 14 }}>
+            {d.senses.map((s, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '76px 1fr', gap: 14 }}>
+                <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1, color: t.accent, textTransform: 'uppercase', paddingTop: 3 }}>{s.label}</div>
+                <div style={{ fontSize: 14, lineHeight: 1.55, color: t.ink }}>{s.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Same root */}
+        <div style={{ padding: '18px 24px', borderBottom: `1px solid ${t.hair}` }}>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 12 }}>Same root</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 8 : 12 }}>
+            {d.family.map((f, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <div style={{ fontFamily: PFont.he, fontSize: 22, direction: 'rtl', color: t.ink, minWidth: 90, textAlign: 'right' }}>{f.he}</div>
+                <div style={{ fontFamily: PFont.mono, fontSize: 11, color: t.muted, minWidth: 70 }}>{f.translit}</div>
+                <div style={{ flex: 1, fontFamily: PFont.display, fontStyle: 'italic', fontSize: 14, color: t.ink }}>{f.gloss}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Cognates */}
+        <div style={{ padding: '18px 24px 30px' }}>
+          <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 12 }}>Cognates · Sister languages</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {d.cognates.map((c, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderBottom: i < d.cognates.length - 1 ? `1px dashed ${t.hair}` : 'none' }}>
+                <span style={{ fontFamily: PFont.mono, fontSize: 11, color: t.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>{c.lang}</span>
+                <span style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: PFont.he, fontSize: 18, direction: 'rtl', color: t.ink }}>{c.form}</span>
+                  <span style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 13, color: t.muted }}>{c.translit}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 18, padding: 16, background: t.accentSoft, borderRadius: 14, borderLeft: `2px solid ${t.accent}` }}>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.accent, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>First attested</div>
+            <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 15, color: t.ink }}>{d.firstAttested}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SCREEN 4 — SETTINGS
+  // ─────────────────────────────────────────────────────────────
+  function PaperSettings({ dark, density, phonetic = 'simple', setPhonetic, onBack }) {
+    const t = paperTokens(dark);
+    const [region, setRegion] = React.useState('modern');
+    const pad = density === 'compact' ? 14 : 20;
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: PFont.body, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+        <PaperHeader t={t} label="04 · PREFERENCES" title="Voice & script" onBack={onBack}/>
+
+        <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: pad, paddingBottom: 40 }}>
+          {/* Pronunciation tradition */}
+          <div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 10 }}>Pronunciation tradition</div>
+            <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 18, overflow: 'hidden' }}>
+              {REGIONS.map((r, i) => {
+                const on = r.id === region;
+                return (
+                  <button key={r.id} onClick={() => setRegion(r.id)} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', padding: `${density === 'compact' ? 12 : 16}px 18px`, textAlign: 'left', borderBottom: i < REGIONS.length - 1 ? `1px solid ${t.hair}` : 'none', display: 'flex', alignItems: 'center', gap: 14, color: t.ink, fontFamily: 'inherit' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: 9, flexShrink: 0, border: `1.5px solid ${on ? t.accent : t.faint}`, background: on ? t.accent : 'transparent', boxShadow: on ? `inset 0 0 0 3px ${t.bg}` : 'none' }}/>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
+                        <span style={{ fontSize: 15, fontWeight: 500, color: t.ink }}>{r.label}</span>
+                        <span style={{ fontFamily: PFont.mono, fontSize: 11, color: on ? t.accent : t.muted, letterSpacing: 0.5 }}>{r.sample}</span>
+                      </div>
+                      <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 13, color: t.muted, marginTop: 2 }}>{r.sub}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Phonetic display */}
+          <div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 10 }}>Phonetic display</div>
+            <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 18, padding: 4, display: 'flex' }}>
+              {[['simple','Easy English','sha-LOM'],['ipa','IPA','ʃaˈlom'],['both','Both','sha-LOM / ʃaˈlom']].map(([k,l,e]) => (
+                <button key={k} onClick={() => setPhonetic && setPhonetic(k)} style={{ flex: 1, background: phonetic === k ? t.ink : 'transparent', color: phonetic === k ? t.bg : t.ink, border: 'none', padding: '12px 8px', borderRadius: 14, cursor: 'pointer', fontFamily: PFont.body, fontSize: 12, fontWeight: 500 }}>
+                  <div>{l}</div>
+                  <div style={{ fontFamily: PFont.mono, fontSize: 10, marginTop: 4, opacity: 0.7 }}>{e}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reading options */}
+          <div>
+            <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase', marginBottom: 10 }}>Reading</div>
+            <div style={{ background: t.card, border: `1px solid ${t.hair}`, borderRadius: 18, padding: '4px 0' }}>
+              {[['Show Hebrew vowel points (niqqud)', true], ['Auto-play audio on tap', false], ['Save to history', true]].map(([label, on], i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${density === 'compact' ? 12 : 16}px 18px`, borderBottom: i < 2 ? `1px solid ${t.hair}` : 'none' }}>
+                  <span style={{ fontSize: 14, color: t.ink }}>{label}</span>
+                  <div style={{ width: 38, height: 22, borderRadius: 11, background: on ? t.accent : t.faint, position: 'relative', cursor: 'pointer' }}>
+                    <div style={{ position: 'absolute', top: 2, left: on ? 18 : 2, width: 18, height: 18, borderRadius: 9, background: '#fff', transition: 'left .15s' }}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 13, color: t.muted, textAlign: 'center', padding: '14px 20px', lineHeight: 1.5 }}>
+            "Pronunciation is a thread that runs through generations."
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SCREEN 5 — HISTORY
+  // ─────────────────────────────────────────────────────────────
+  function PaperHistory({ dark, density, onBack, onOpen }) {
+    const t = paperTokens(dark);
+    const pad = density === 'compact' ? 10 : 14;
+
+    const groups = [];
+    HISTORY.forEach((item, idx) => {
+      let g = groups.find((x) => x.label === item.dateLabel);
+      if (!g) { g = { label: item.dateLabel, items: [] }; groups.push(g); }
+      g.items.push({ ...item, idx });
+    });
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: PFont.body, overflow: 'auto' }}>
+        <PaperHeader t={t} label="LIBRARY" title="History" onBack={onBack}
+          trailing={
+            <PaperIconButton t={t} aria-label="Search">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                <circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5L13 13"/>
+              </svg>
+            </PaperIconButton>
+          }
+        />
+
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, margin: '6px 24px 18px', background: t.hair, border: `1px solid ${t.hair}`, borderRadius: 14, overflow: 'hidden' }}>
+          {[['Captures', HISTORY.length], ['Words', HISTORY.reduce((s, h) => s + h.words, 0)], ['Saved', 4]].map(([k, v]) => (
+            <div key={k} style={{ background: t.card, padding: '12px 14px' }}>
+              <div style={{ fontFamily: PFont.mono, fontSize: 9, letterSpacing: 1.2, color: t.muted, textTransform: 'uppercase' }}>{k}</div>
+              <div style={{ fontFamily: PFont.display, fontSize: 28, lineHeight: 1, color: t.ink, marginTop: 6, letterSpacing: -0.5 }}>{v}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filter chips */}
+        <div style={{ display: 'flex', gap: 6, padding: '0 24px 14px', overflowX: 'auto' }}>
+          {['All', 'iMessage', 'WhatsApp', 'Photos', 'Maps', 'Saved'].map((f, i) => (
+            <button key={f} style={{ border: i === 0 ? 'none' : `1px solid ${t.hair}`, background: i === 0 ? t.ink : 'transparent', color: i === 0 ? t.bg : t.muted, fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', padding: '6px 12px', borderRadius: 999, cursor: 'pointer', flexShrink: 0 }}>{f}</button>
+          ))}
+        </div>
+
+        {/* Timeline */}
+        {groups.map((g) => (
+          <div key={g.label} style={{ marginBottom: 18 }}>
+            <div style={{ padding: '6px 24px 10px', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 20, color: t.ink }}>{g.label}</div>
+              <div style={{ flex: 1, height: 1, background: t.hair }}/>
+              <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint, letterSpacing: 0.5 }}>{g.items.length}</div>
+            </div>
+            <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {g.items.map((h) => {
+                const src = SOURCE_META[h.source] || { color: t.faint, tag: '·' };
+                return (
+                  <button key={h.idx} onClick={() => onOpen && onOpen(h.idx)} style={{ display: 'block', width: '100%', textAlign: 'left', background: t.card, border: `1px solid ${t.hair}`, borderRadius: 16, padding: pad + 4, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: PFont.mono, fontSize: 10, color: t.muted, letterSpacing: 1, textTransform: 'uppercase' }}>
+                        <span style={{ width: 18, height: 18, borderRadius: 4, background: src.color, color: '#fff', fontSize: 8, fontWeight: 600, letterSpacing: 0.3, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{src.tag}</span>
+                        <span>{h.source}</span>
+                      </div>
+                      <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint, letterSpacing: 0.4 }}>{h.when.toUpperCase()}</div>
+                    </div>
+                    <div style={{ fontFamily: PFont.he, fontSize: 26, direction: 'rtl', color: t.ink, lineHeight: 1.2, marginBottom: 6, fontWeight: 500 }}>{h.he}</div>
+                    <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 15, color: t.ink, lineHeight: 1.3, marginBottom: 8 }}>"{h.gloss}"</div>
+                    <div style={{ fontFamily: PFont.mono, fontSize: 11, color: t.accent, letterSpacing: 0.4, marginBottom: 10 }}>{h.translit}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: `1px solid ${t.hair}` }}>
+                      <div style={{ fontSize: 12, color: t.muted, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0, marginRight: 10 }}>{h.context}</div>
+                      <div style={{ fontFamily: PFont.mono, fontSize: 10, color: t.faint, letterSpacing: 0.5, flexShrink: 0 }}>{h.words} {h.words === 1 ? 'word' : 'words'}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 13, color: t.muted, textAlign: 'center', padding: '8px 32px 40px', lineHeight: 1.5 }}>
+          "Every phrase you've captured, kept in one place."
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // OVERLAY — SYLLABLE PRACTICE
+  // ─────────────────────────────────────────────────────────────
+  function PaperPractice({ dark, density, phonetic = 'simple', wordIdx, onClose }) {
+    const t = paperTokens(dark);
+    const word = SAMPLE_PHRASE.words[wordIdx];
+    const total = word.syllables.length;
+
+    const [syll, setSyll] = React.useState(0);
+    const [drag, setDrag] = React.useState(0);
+    const [enter, setEnter] = React.useState(false);
+
+    React.useEffect(() => { requestAnimationFrame(() => setEnter(true)); }, []);
+    React.useEffect(() => { setSyll(0); }, [wordIdx]);
+
+    const ref = React.useRef(null);
+    const dragRef = React.useRef({ active: false, startX: 0, w: 0 });
+
+    const goto = (i) => setSyll(Math.max(0, Math.min(total - 1, i)));
+
+    const onPointerDown = (e) => {
+      if (e.target.closest('[data-no-drag]')) return;
+      dragRef.current = { active: true, startX: e.clientX, w: ref.current ? ref.current.offsetWidth : 320 };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    };
+    const onPointerMove = (e) => { if (!dragRef.current.active) return; setDrag(e.clientX - dragRef.current.startX); };
+    const onPointerUp = () => {
+      if (!dragRef.current.active) return;
+      const dx = drag;
+      dragRef.current.active = false;
+      setDrag(0);
+      if (Math.abs(dx) > dragRef.current.w * 0.18) goto(syll + (dx < 0 ? 1 : -1));
+    };
+
+    const s = word.syllables[syll];
+    const showSimple = phonetic === 'simple' || phonetic === 'both';
+    const showIpa    = phonetic === 'ipa'    || phonetic === 'both';
+
+    const heSpans = word.syllables.map((sy, i) => (
+      <span key={i} style={{ color: i === syll ? t.accent : t.faint, transition: 'color .25s', borderBottom: i === syll ? `2px solid ${t.accent}` : '2px solid transparent', paddingBottom: 4 }}>{sy.chars}</span>
+    ));
+
+    return (
+      <div style={{ position: 'absolute', inset: 0, zIndex: 80, background: 'rgba(26,23,20,0.45)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', opacity: enter ? 1 : 0, transition: 'opacity .25s', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }} onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()} style={{ background: t.bg, color: t.ink, fontFamily: PFont.body, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: '14px 0 30px', transform: enter ? 'translateY(0)' : 'translateY(40px)', transition: 'transform .35s cubic-bezier(.2,.7,.2,1)', boxShadow: '0 -20px 60px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {/* Grabber */}
+          <div style={{ width: 40, height: 4, borderRadius: 2, background: t.faint, alignSelf: 'center', margin: '4px 0 2px' }}/>
+
+          {/* Header */}
+          <div style={{ padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontFamily: PFont.mono, fontSize: 10, letterSpacing: 1.4, color: t.muted, textTransform: 'uppercase' }}>PRACTICE · {String(syll + 1).padStart(2,'0')} / {String(total).padStart(2,'0')}</div>
+              <div style={{ fontFamily: PFont.display, fontSize: 26, color: t.ink, marginTop: 4, lineHeight: 1, letterSpacing: -0.3 }}>{word.gloss}</div>
+            </div>
+            <button data-no-drag onClick={onClose} aria-label="Close" style={{ width: 32, height: 32, borderRadius: 16, border: `1px solid ${t.hair}`, background: 'transparent', color: t.ink, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+            </button>
+          </div>
+
+          {/* Hebrew word with highlighted syllable */}
+          <div style={{ direction: 'rtl', textAlign: 'center', padding: '6px 24px', fontFamily: PFont.he, fontSize: 52, lineHeight: 1, color: t.faint, letterSpacing: -1 }}>{heSpans}</div>
+
+          {/* Carousel */}
+          <div ref={ref} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} style={{ position: 'relative', height: 168, overflow: 'hidden', touchAction: 'pan-y', cursor: dragRef.current.active ? 'grabbing' : 'grab', userSelect: 'none' }}>
+            <div style={{ position: 'absolute', inset: 0, transform: `translateX(${-syll * 100}%) translateX(${drag}px)`, transition: dragRef.current.active ? 'none' : 'transform .35s cubic-bezier(.2,.7,.2,1)', display: 'flex' }}>
+              {word.syllables.map((sy, i) => (
+                <div key={i} style={{ flex: '0 0 100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', gap: 8 }}>
+                  <div style={{ fontFamily: PFont.he, fontSize: 64, lineHeight: 1, color: t.ink, direction: 'rtl', letterSpacing: -1 }}>{sy.chars}</div>
+                  {showSimple && (
+                    <div style={{ fontFamily: PFont.mono, fontSize: 24, letterSpacing: 1, color: i === word.stress ? t.accent : t.ink, fontWeight: i === word.stress ? 600 : 400 }}>
+                      {sy.simple.toLowerCase()}
+                      {i === word.stress && <span style={{ fontSize: 12, marginLeft: 6, verticalAlign: 'middle', color: t.accent, fontWeight: 400 }}>· stress</span>}
+                    </div>
+                  )}
+                  {showIpa && <div style={{ fontFamily: PFont.mono, fontSize: showSimple ? 14 : 22, color: t.muted, letterSpacing: 0.5 }}>/{sy.ipa}/</div>}
+                </div>
+              ))}
+            </div>
+            {syll > 0 && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 36, background: `linear-gradient(to right, ${t.bg}, transparent)`, pointerEvents: 'none' }}/>}
+            {syll < total - 1 && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 36, background: `linear-gradient(to left, ${t.bg}, transparent)`, pointerEvents: 'none' }}/>}
+          </div>
+
+          {/* Dots */}
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center', padding: '0 24px' }} data-no-drag>
+            {word.syllables.map((_, i) => (
+              <button key={i} onClick={() => goto(i)} aria-label={`Syllable ${i+1}`} style={{ border: 'none', background: 'transparent', padding: 4, cursor: 'pointer' }}>
+                <div style={{ width: i === syll ? 22 : 6, height: 6, borderRadius: 3, background: i === syll ? t.accent : t.faint, transition: 'width .25s, background .25s' }}/>
+              </button>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div style={{ padding: '4px 24px', display: 'flex', gap: 10, alignItems: 'center' }} data-no-drag>
+            <button onClick={() => goto(syll - 1)} disabled={syll === 0} aria-label="Previous" style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${t.hair}`, background: 'transparent', color: syll === 0 ? t.faint : t.ink, cursor: syll === 0 ? 'default' : 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 2L4 7l5 5"/></svg>
+            </button>
+            <button aria-label="Play" style={{ flex: 1, height: 48, borderRadius: 24, border: 'none', background: t.accent, color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontFamily: PFont.body, fontSize: 14, fontWeight: 500, letterSpacing: 0.2 }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M4 2v10l7-5z"/></svg>
+              Hear "{showSimple ? s.simple.toLowerCase() : s.ipa}"
+            </button>
+            <button onClick={() => goto(syll + 1)} disabled={syll === total - 1} aria-label="Next" style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${t.hair}`, background: 'transparent', color: syll === total - 1 ? t.faint : t.ink, cursor: syll === total - 1 ? 'default' : 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 2l5 5-5 5"/></svg>
+            </button>
+          </div>
+
+          {/* Hint */}
+          <div style={{ fontFamily: PFont.display, fontStyle: 'italic', fontSize: 13, color: t.muted, textAlign: 'center', padding: '0 24px' }}>
+            {syll === total - 1
+              ? <>Now try the whole word: <span style={{ color: t.accent }}>{word.simple.toLowerCase()}</span></>
+              : 'Swipe ← to advance · or use the arrows'}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // APP SHELL
+  // ─────────────────────────────────────────────────────────────
+  const TWEAK_DEFAULTS = { dark: false, density: 'comfortable', phonetic: 'simple' };
+
+  function App() {
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    const { dark, density, phonetic } = t;
+    const setPhonetic = (v) => setTweak('phonetic', v);
+
+    const [screen, setScreen] = React.useState('upload');
+    const [prevScreen, setPrevScreen] = React.useState('upload');
+    const [activeWord, setActiveWord] = React.useState(1);
+    const [practiceWord, setPracticeWord] = React.useState(null);
+
+    const go = (next) => { setPrevScreen(screen); setScreen(next); };
+    const back = () => setScreen(prevScreen === screen ? 'upload' : prevScreen);
+
+    const bg = dark ? '#0E0C09' : '#EDE8DD';
+
+    return (
+      <React.Fragment>
+        <div style={{ minHeight: '100vh', width: '100%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, boxSizing: 'border-box', fontFamily: '"Geist", -apple-system, system-ui, sans-serif', position: 'relative', backgroundImage: dark ? 'radial-gradient(circle at 30% 20%, rgba(184,92,64,0.06) 0%, transparent 50%)' : 'radial-gradient(circle at 30% 20%, rgba(184,92,64,0.05) 0%, transparent 50%)' }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <IOSDevice width={390} height={844} dark={dark}>
+              <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+                {screen === 'upload' && (
+                  <PaperUpload dark={dark} density={density}
+                    onTranslate={() => go('result')}
+                    onSettings={() => go('settings')}
+                    onPickRecent={() => go('result')}
+                    onHistory={() => go('history')}
+                  />
+                )}
+                {screen === 'result' && (
+                  <PaperResult dark={dark} density={density}
+                    phonetic={phonetic} setPhonetic={setPhonetic}
+                    active={activeWord} setActive={setActiveWord}
+                    onBack={() => go('upload')}
+                    onLookup={() => go('dict')}
+                    onPractice={(i) => { setActiveWord(i); setPracticeWord(i); }}
+                  />
+                )}
+                {screen === 'dict' && (
+                  <PaperDictionary dark={dark} density={density} onBack={() => go('result')}/>
+                )}
+                {screen === 'settings' && (
+                  <PaperSettings dark={dark} density={density}
+                    phonetic={phonetic} setPhonetic={setPhonetic}
+                    onBack={() => go(prevScreen)}/>
+                )}
+                {screen === 'history' && (
+                  <PaperHistory dark={dark} density={density}
+                    onBack={() => go('upload')}
+                    onOpen={() => go('result')} />
+                )}
+                {practiceWord !== null && (
+                  <PaperPractice dark={dark} density={density}
+                    phonetic={phonetic} wordIdx={practiceWord}
+                    onClose={() => setPracticeWord(null)} />
+                )}
+              </div>
+            </IOSDevice>
+
+            {/* Screen label */}
+            <div style={{ position: 'absolute', top: -36, left: 0, fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 10, letterSpacing: 1.4, textTransform: 'uppercase', color: dark ? 'rgba(242,237,227,0.45)' : 'rgba(26,23,20,0.45)' }}>
+              SoundItOut · {{ upload: '01 Capture', result: '02 Result', dict: '03 Dictionary', settings: '04 Settings', history: '05 History' }[screen]}
+            </div>
+
+            {/* Step pills */}
+            <div style={{ position: 'absolute', top: -36, right: 0, display: 'flex', gap: 6 }}>
+              {[['upload','01'],['result','02'],['dict','03'],['settings','04'],['history','05']].map(([k, n]) => (
+                <button key={k} onClick={() => go(k)} aria-label={k} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: '"Geist Mono", ui-monospace, monospace', fontSize: 10, letterSpacing: 1, padding: '4px 8px', borderRadius: 999, color: screen === k ? '#B85C40' : (dark ? 'rgba(242,237,227,0.45)' : 'rgba(26,23,20,0.45)'), background: screen === k ? (dark ? 'rgba(184,92,64,0.15)' : 'rgba(184,92,64,0.10)') : 'transparent' }}>{n}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Theme" />
+          <TweakToggle label="Dark mode" value={dark} onChange={(v) => setTweak('dark', v)} />
+          <TweakSection label="Layout" />
+          <TweakRadio label="Density" value={density} options={['compact', 'comfortable']} onChange={(v) => setTweak('density', v)} />
+          <TweakSection label="Phonetics" />
+          <TweakRadio label="Style" value={phonetic} options={['simple', 'both', 'ipa']} onChange={(v) => setTweak('phonetic', v)} />
+        </TweaksPanel>
+      </React.Fragment>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
