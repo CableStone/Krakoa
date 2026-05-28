@@ -947,7 +947,7 @@
     const [activeWord, setActiveWord] = React.useState(1);
     const [practiceWord, setPracticeWord] = React.useState(null);
 
-    const go = (next) => { setPrevScreen(screen); setScreen(next); };
+    const go = (next) => { setPrevScreen(screen); setScreen(next); setPracticeWord(null); };
     const back = () => setScreen(prevScreen === screen ? 'upload' : prevScreen);
 
     const bg = dark ? '#0E0C09' : '#EDE8DD';
