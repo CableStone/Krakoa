@@ -455,13 +455,16 @@
 
 <script>
   (function () {
-    var bagCount = 0;
+    var KEY = 'lyonsBagCount';
     var bagCountEl = document.getElementById('bagCount');
+    function getCount() { return parseInt(localStorage.getItem(KEY) || '0', 10) || 0; }
+    function setCount(n) { localStorage.setItem(KEY, String(n)); bagCountEl.textContent = String(n); }
+    setCount(getCount());
+
     document.getElementById('productGrid').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-add');
       if (!btn) return;
-      bagCount += 1;
-      bagCountEl.textContent = String(bagCount);
+      setCount(getCount() + 1);
     });
 
     var form = document.getElementById('newsletterForm');
