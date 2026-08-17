@@ -1,0 +1,62 @@
+{%- liquid
+  assign nav_current = ''
+  case request.page_type
+    when 'collection' or 'product'
+      assign nav_current = 'shop'
+    when 'page'
+      case page.handle
+        when 'about' or 'atelier'
+          assign nav_current = 'atelier'
+        when 'contact'
+          assign nav_current = 'contact'
+      endcase
+  endcase
+-%}
+<header class="site-header">
+  <button type="button" class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><line x1="2" y1="5" x2="18" y2="5"/><line x1="2" y1="10" x2="18" y2="10"/><line x1="2" y1="15" x2="18" y2="15"/></svg>
+  </button>
+
+  <nav class="site-nav" aria-label="Primary">
+    {%- for link in section.settings.menu.links -%}
+      {%- liquid
+        assign is_current = false
+        if nav_current == 'shop' and link.title contains 'Shop'
+          assign is_current = true
+        elsif nav_current == 'atelier' and link.title contains 'Atelier'
+          assign is_current = true
+        elsif nav_current == 'contact' and link.title contains 'Contact'
+          assign is_current = true
+        endif
+      -%}
+      <a href="{{ link.url }}"{% if is_current %} class="current"{% endif %}>{{ link.title }}</a>
+    {%- endfor -%}
+  </nav>
+
+  <a href="{{ routes.root_url }}" class="brand">
+    {% render 'icon-mark' %}
+    {{ shop.name | upcase }}
+  </a>
+
+  <div class="header-actions">
+    <a href="{{ routes.search_url }}">Search</a>
+    <a href="{{ routes.cart_url }}" class="bag-link" data-cart-open-trigger aria-label="Bag">
+      {% render 'icon-bag' %}
+      <span data-cart-count>{{ cart.item_count }}</span>
+    </a>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

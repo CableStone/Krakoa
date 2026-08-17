@@ -1,0 +1,27 @@
+<section class="related"
+         data-related-products
+         data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.count }}&intent=related">
+  <h2>{{ section.settings.heading }}</h2>
+  <div class="related-grid" data-related-grid>
+    {%- if recommendations.performed and recommendations.products_count > 0 -%}
+      {%- for product in recommendations.products -%}
+        <a class="related-card" href="{{ product.url }}">
+          <div class="related-photo">
+            {% render 'media-or-placeholder', image: product.featured_media.preview_image, caption: product.title, sizes: '25vw' %}
+          </div>
+          <div class="related-row"><span>{{ product.title }}</span><span class="money">{{ product.price | money }}</span></div>
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Related products",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "You May Also Like" },
+    { "type": "range", "id": "count", "label": "Number of products", "min": 2, "max": 8, "step": 1, "default": 4 }
+  ]
+}
+{% endschema %}

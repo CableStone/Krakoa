@@ -1,0 +1,27 @@
+{%- comment -%}
+  Renders `image` filling its container, or a styled placeholder tile with
+  `caption` when no image is set — lets merchants preview page layout
+  before uploading real photography.
+
+  Accepts:
+    image      - an image object (product.featured_media.preview_image,
+                  a settings image_picker value, etc.) or nil
+    caption    - placeholder caption text, shown only when image is nil
+    on_indigo  - true to use the light-on-indigo placeholder variant
+    sizes      - sizes attribute for the responsive image (default "100vw")
+{%- endcomment -%}
+{%- if image -%}
+  <div class="media-fill">
+    {{ image | image_url: width: 1600 | image_tag:
+      loading: 'lazy',
+      widths: '400,600,800,1200,1600',
+      sizes: sizes | default: '100vw',
+      alt: image.alt | default: caption
+    }}
+  </div>
+{%- else -%}
+  <div class="ph{% if on_indigo %} on-indigo{% endif %}">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+    {%- if caption -%}<div class="ph-cap">{{ caption }}</div>{%- endif -%}
+  </div>
+{%- endif -%}

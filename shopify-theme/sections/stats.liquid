@@ -1,0 +1,40 @@
+<section class="stats">
+  <h2 class="serif">{{ section.settings.heading }}</h2>
+  <div class="stats-grid">
+    {%- for block in section.blocks -%}
+      <div {{ block.shopify_attributes }}>
+        <div class="num serif">{{ block.settings.number }}</div>
+        <div class="label">{{ block.settings.label }}</div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Stats",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "By the Numbers" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "12" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Tribes, twelve pieces" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stats",
+      "blocks": [
+        { "type": "stat", "settings": { "number": "12", "label": "Tribes, twelve pieces" } },
+        { "type": "stat", "settings": { "number": "2", "label": "Collections" } },
+        { "type": "stat", "settings": { "number": "60", "label": "Pieces per run" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

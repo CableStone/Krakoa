@@ -1,0 +1,123 @@
+{%- liquid
+  assign size_option_index = -1
+  for option in product.options_with_values
+    if option.name == 'Size'
+      assign size_option_index = forloop.index0
+    endif
+  endfor
+  assign current_variant = product.selected_or_first_available_variant
+  assign gallery_images = product.media | where: 'media_type', 'image'
+-%}
+
+<div class="breadcrumb">
+  <a href="{{ routes.root_url }}">Home</a><span>/</span>
+  <a href="{{ product.collections.first.url | default: routes.all_products_collection_url }}">Shop</a><span>/</span>
+  <span class="current">{{ product.title }}</span>
+</div>
+
+<div class="product-detail">
+  <div class="gallery" data-gallery>
+    {%- if gallery_images.size > 1 -%}
+      <div class="thumbs">
+        {%- for media in gallery_images limit: 6 -%}
+          <button type="button" class="thumb{% if forloop.first %} active{% endif %}" data-gallery-thumb
+                  data-full-src="{{ media.preview_image | image_url: width: 1400 }}" aria-label="View {{ forloop.index }}">
+            <div class="media-fill">{{ media.preview_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}</div>
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    <div class="main-photo" data-gallery-main>
+      {%- assign main_view_caption = product.title | append: ' — main view' -%}
+      {% render 'media-or-placeholder', image: gallery_images.first.preview_image, caption: main_view_caption, sizes: '(min-width: 900px) 45vw, 100vw' %}
+    </div>
+  </div>
+
+  <div class="product-info">
+    {%- if product.collections.first != blank -%}
+      <div class="product-eyebrow">{{ product.collections.first.title }}</div>
+    {%- endif -%}
+    <h1 class="serif">{{ product.title }}</h1>
+    <div class="product-price">
+      <span data-product-price>{{ current_variant.price | money }}</span>
+      <s data-product-compare-price {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>{{ current_variant.compare_at_price | money }}</s>
+    </div>
+
+    {%- if product.description != blank -%}
+      <div class="product-desc">{{ product.description }}</div>
+    {%- endif -%}
+
+    <form data-product-form>
+      {%- if size_option_index > -1 -%}
+        <div>
+          <div class="size-label">{{ product.options_with_values[size_option_index].name }}</div>
+          <div class="size-row">
+            {%- for value in product.options_with_values[size_option_index].values -%}
+              {%- liquid
+                assign matching_variant = nil
+                for v in product.variants
+                  if v.options[size_option_index] == value
+                    assign matching_variant = v
+                    break
+                  endif
+                endfor
+              -%}
+              <button type="button" class="size-opt{% if current_variant.options[size_option_index] == value %} selected{% endif %}"
+                      data-size-opt="{{ value }}"
+                      {% unless matching_variant.available %}disabled{% endunless %}>{{ value }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <button type="button" class="btn-solid-indigo" data-add-to-cart data-variant-id="{{ current_variant.id }}"
+              {% unless current_variant.available %}disabled{% endunless %}>
+        {%- if current_variant.available -%}Add to Bag{%- else -%}Sold Out{%- endif -%}
+      </button>
+
+      <script type="application/json" data-variants-json>
+        [
+          {%- for variant in product.variants -%}
+            {
+              "id": {{ variant.id | json }},
+              "option_value": {{ variant.options[size_option_index] | json }},
+              "price": {{ variant.price | json }},
+              "compare_at_price": {{ variant.compare_at_price | json }},
+              "available": {{ variant.available | json }}
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ]
+      </script>
+    </form>
+
+    <div class="shipping-note">{{ section.settings.shipping_note }}</div>
+
+    <div class="details-accordion">
+      {%- for block in section.blocks -%}
+        <details {{ block.shopify_attributes }}>
+          <summary>{{ block.settings.label }}</summary>
+          <p>{{ block.settings.content }}</p>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product information",
+  "settings": [
+    { "type": "text", "id": "shipping_note", "label": "Shipping note", "default": "Free shipping & returns" }
+  ],
+  "blocks": [
+    {
+      "type": "detail",
+      "name": "Detail",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Fabric & Care" },
+        { "type": "textarea", "id": "content", "label": "Content", "default": "100% garment-dyed cotton twill. Machine wash cold, hang dry." }
+      ]
+    }
+  ]
+}
+{% endschema %}

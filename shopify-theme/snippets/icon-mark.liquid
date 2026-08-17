@@ -1,0 +1,24 @@
+{%- comment -%}
+  Renders the Lyons of Judah wordmark icon. Accepts `size` (px, default 18).
+{%- endcomment -%}
+{%- liquid
+  assign icon_size = size | default: 18
+-%}
+<svg width="{{ icon_size }}" height="{{ icon_size }}" viewBox="0 0 100 100" fill="none" style="flex-shrink:0" aria-hidden="true">
+  <line x1="50" y1="5" x2="50" y2="25" stroke="currentColor" stroke-width="4"/>
+  <line x1="27" y1="12" x2="37" y2="30" stroke="currentColor" stroke-width="4"/>
+  <line x1="73" y1="12" x2="63" y2="30" stroke="currentColor" stroke-width="4"/>
+  <line x1="10" y1="30" x2="30" y2="38" stroke="currentColor" stroke-width="4"/>
+  <line x1="90" y1="30" x2="70" y2="38" stroke="currentColor" stroke-width="4"/>
+  <line x1="8" y1="50" x2="30" y2="50" stroke="currentColor" stroke-width="4"/>
+  <line x1="92" y1="50" x2="70" y2="50" stroke="currentColor" stroke-width="4"/>
+  <line x1="10" y1="70" x2="30" y2="62" stroke="currentColor" stroke-width="4"/>
+  <line x1="90" y1="70" x2="70" y2="62" stroke="currentColor" stroke-width="4"/>
+  <line x1="27" y1="88" x2="37" y2="70" stroke="currentColor" stroke-width="4"/>
+  <line x1="73" y1="88" x2="63" y2="70" stroke="currentColor" stroke-width="4"/>
+  <line x1="50" y1="95" x2="50" y2="75" stroke="currentColor" stroke-width="4"/>
+  <path d="M40 38 L47 45" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 38 L53 45" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <path d="M44 48 L50 55 L56 48 Z" fill="currentColor"/>
+  <path d="M50 55 C50 62 44 62 42 58 M50 55 C50 62 56 62 58 58" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

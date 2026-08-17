@@ -1,0 +1,13 @@
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "header": {
+      "type": "header"
+    },
+    "cart-drawer": {
+      "type": "cart-drawer"
+    }
+  },
+  "order": ["header", "cart-drawer"]
+}

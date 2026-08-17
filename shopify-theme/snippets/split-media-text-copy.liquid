@@ -1,0 +1,11 @@
+{%- comment -%} Copy block shared by both image positions in split-media-text.liquid {%- endcomment -%}
+{%- if section.settings.eyebrow != blank -%}
+  <div class="split-eyebrow"{% if on_indigo %} style="color:rgba(233,229,219,.6)"{% endif %}>{{ section.settings.eyebrow }}</div>
+{%- endif -%}
+<h2 class="serif">{{ section.settings.heading }}</h2>
+{%- if section.settings.text != blank -%}
+  <p{% if on_indigo %} style="color:rgba(233,229,219,.75)"{% endif %}>{{ section.settings.text }}</p>
+{%- endif -%}
+{%- if section.settings.link_label != blank -%}
+  <a href="{{ section.settings.link_url }}" class="link-underline"{% if on_indigo %} style="color:var(--cream);border-color:var(--cream)"{% endif %}>{{ section.settings.link_label }}</a>
+{%- endif -%}

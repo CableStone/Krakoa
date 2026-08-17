@@ -1,0 +1,35 @@
+{%- comment -%}
+  Renders one product-grid card. Accepts `product` (a Shopify product object)
+  and optional `photo_height` (px, default 420).
+
+  Tag-based filtering: the Shop page's client-side filters match against
+  this card's data-tags attribute, built from the product's own tags
+  (lowercased, spaces converted to hyphens). Tag products in the Shopify
+  admin with e.g. "choshen", "tzadik", "tees", "knitwear", "outerwear" to
+  drive the Shop page filter row — see the theme README.
+{%- endcomment -%}
+{%- liquid
+  assign tag_string = ''
+  for t in product.tags
+    assign clean_tag = t | downcase | replace: ' ', '-'
+    assign tag_string = tag_string | append: clean_tag | append: ' '
+  endfor
+  assign tag_string = tag_string | strip
+  assign variant = product.selected_or_first_available_variant
+-%}
+<div class="product-card" data-tags="{{ tag_string }}">
+  <a href="{{ product.url }}">
+    <div class="product-photo">
+      {% render 'media-or-placeholder', image: product.featured_media.preview_image, caption: product.title, sizes: '(min-width: 900px) 25vw, 50vw' %}
+    </div>
+  </a>
+  <div class="product-row">
+    <a href="{{ product.url }}">{{ product.title }}</a>
+    <span class="money">{{ variant.price | default: product.price_min | money }}</span>
+  </div>
+  {%- if product.available -%}
+    <button type="button" class="btn-add" data-add-to-cart data-variant-id="{{ variant.id }}">Add to Bag</button>
+  {%- else -%}
+    <button type="button" class="btn-add" disabled>Sold Out</button>
+  {%- endif -%}
+</div>

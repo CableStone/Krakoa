@@ -1,0 +1,64 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "placeholder_caption": "Atelier — the workshop, wide shot",
+        "heading": "The Atelier",
+        "height": 640,
+        "height_mobile": 420
+      }
+    },
+    "quote": {
+      "type": "quote",
+      "settings": {
+        "quote": "We wanted clothing that carries something — the twelve stones of the Choshen, and the faces of the tzadikim who came before us.",
+        "citation": "Founder & Creative Director"
+      }
+    },
+    "split-choshen": {
+      "type": "split-media-text",
+      "settings": {
+        "image_position": "right",
+        "copy_style": "panel",
+        "placeholder_caption": "Choshen — dyed swatches, twelve stones",
+        "eyebrow": "Collection One — Choshen",
+        "heading": "Twelve tribes, read in stone and color.",
+        "text": "The Choshen Collection takes the high priest's breastplate as its color card. Twelve pieces, one for each tribe, each garment-dyed to its own stone — odem for Yehuda, sapir for Levi, yashfeh for Binyamin — with the tribe's mark embroidered small and low.",
+        "link_label": "",
+        "link_url": ""
+      }
+    },
+    "split-tzadik": {
+      "type": "split-media-text",
+      "settings": {
+        "image_position": "left",
+        "copy_style": "plain",
+        "placeholder_caption": "Tzadik Him — portrait drawing on press",
+        "eyebrow": "Collection Two — Tzadik Him",
+        "heading": "The faces we keep close.",
+        "text": "Tzadik Him puts hand-drawn portraits of the tzadikim on heavyweight cotton — tees, crewnecks, hoodies. Each portrait is drawn in the studio, printed in small runs, and treated with the weight it deserves: no slogans, no noise, just the face.",
+        "link_label": "",
+        "link_url": ""
+      }
+    },
+    "stats": {
+      "type": "stats",
+      "blocks": {
+        "tribes": { "type": "stat", "settings": { "number": "12", "label": "Tribes, twelve pieces" } },
+        "collections": { "type": "stat", "settings": { "number": "2", "label": "Collections" } },
+        "run": { "type": "stat", "settings": { "number": "60", "label": "Pieces per run" } }
+      },
+      "block_order": ["tribes", "collections", "run"]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "style": "light",
+        "heading": "Stay Close to Lyons of Judah",
+        "text": "New collections, atelier notes, and early access — quietly, in your inbox."
+      }
+    }
+  },
+  "order": ["hero", "quote", "split-choshen", "split-tzadik", "stats", "newsletter"]
+}

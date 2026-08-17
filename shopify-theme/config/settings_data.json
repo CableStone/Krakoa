@@ -1,0 +1,10 @@
+{
+  "current": {
+    "color_indigo": "#2b3a8f",
+    "color_cream": "#e9e5db",
+    "color_panel": "#f2efe6",
+    "page_width": 1600,
+    "cart_type": "drawer"
+  },
+  "presets": {}
+}

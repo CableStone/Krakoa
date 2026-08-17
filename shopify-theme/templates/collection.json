@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "main": {
+      "type": "collection-grid",
+      "settings": {
+        "eyebrow": "Two Collections",
+        "heading": "",
+        "products_per_page": 24
+      },
+      "blocks": {
+        "choshen": { "type": "filter", "settings": { "label": "Choshen Collection", "tag": "choshen" } },
+        "tzadik": { "type": "filter", "settings": { "label": "Tzadik Him", "tag": "tzadik" } },
+        "tees": { "type": "filter", "settings": { "label": "Tees", "tag": "tees" } },
+        "knitwear": { "type": "filter", "settings": { "label": "Knitwear", "tag": "knitwear" } },
+        "outerwear": { "type": "filter", "settings": { "label": "Outerwear", "tag": "outerwear" } }
+      },
+      "block_order": ["choshen", "tzadik", "tees", "knitwear", "outerwear"]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "style": "light",
+        "heading": "Stay Close to Lyons of Judah",
+        "text": "New collections, atelier notes, and early access — quietly, in your inbox."
+      }
+    }
+  },
+  "order": ["main", "newsletter"]
+}

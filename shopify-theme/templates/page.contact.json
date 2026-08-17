@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "contact": {
+      "type": "contact-form",
+      "settings": {
+        "eyebrow": "Get in Touch",
+        "heading": "Contact Us",
+        "form_heading": "Send a Message"
+      },
+      "blocks": {
+        "showroom": { "type": "info", "settings": { "label": "Atelier & Showroom", "value": "<p>14 Rue de Saintonge<br>75003 Paris, France</p>" } },
+        "hours": { "type": "info", "settings": { "label": "Hours", "value": "<p>Tuesday – Saturday<br>11:00 – 19:00, by appointment</p>" } },
+        "care": { "type": "info", "settings": { "label": "Client Care", "value": "<p>hello@lyonsofjudah.com<br>+33 1 42 00 00 00</p>" } },
+        "follow": { "type": "info", "settings": { "label": "Follow", "value": "<p><a href=\"#\">Instagram</a> · <a href=\"#\">Pinterest</a></p>" } }
+      },
+      "block_order": ["showroom", "hours", "care", "follow"]
+    }
+  },
+  "order": ["contact"]
+}

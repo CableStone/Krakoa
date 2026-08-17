@@ -1,0 +1,43 @@
+<div class="cart-drawer-overlay" data-cart-overlay></div>
+<aside class="cart-drawer" data-cart-drawer aria-hidden="true" aria-label="Shopping bag">
+  <div class="cart-drawer-head">
+    <h2 class="serif">Your Bag</h2>
+    <button type="button" class="cart-drawer-close" data-cart-close aria-label="Close">&times;</button>
+  </div>
+  <div class="cart-drawer-items" data-cart-items></div>
+  <div class="cart-drawer-footer" data-cart-footer hidden>
+    <div class="cart-subtotal-row">
+      <span>Subtotal</span>
+      <span data-cart-subtotal>$0.00</span>
+    </div>
+    <a href="{{ routes.cart_url }}" class="link-underline" style="align-self:center;margin-top:0">View Bag</a>
+    <form action="{{ routes.cart_url }}" method="post">
+      <button type="submit" name="checkout" class="btn-solid-indigo" style="width:100%">Check Out</button>
+    </form>
+  </div>
+  <template data-cart-line-template>
+    <div class="cart-line" data-line>
+      <div class="cart-line-media">
+        <img data-line-image alt="" width="72" height="90" loading="lazy">
+      </div>
+      <div class="cart-line-info">
+        <div class="cart-line-title" data-line-title></div>
+        <div class="cart-line-variant" data-line-variant></div>
+        <div class="money" data-line-price></div>
+        <div class="cart-line-qty-row">
+          <button type="button" data-line-decrease aria-label="Decrease quantity">&minus;</button>
+          <span data-line-qty>1</span>
+          <button type="button" data-line-increase aria-label="Increase quantity">+</button>
+          <button type="button" class="cart-line-remove" data-line-remove>Remove</button>
+        </div>
+      </div>
+    </div>
+  </template>
+</aside>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": []
+}
+{% endschema %}

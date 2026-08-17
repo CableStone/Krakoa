@@ -1,0 +1,52 @@
+{
+  "general": {
+    "search": "Search",
+    "close": "Close"
+  },
+  "cart": {
+    "title": "Your Bag",
+    "empty": "Your bag is empty.",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "checkout": "Check Out",
+    "view_cart": "View Bag",
+    "continue_shopping": "Continue Shopping",
+    "added": "Added to bag",
+    "error": "Couldn't add that item — please try again."
+  },
+  "products": {
+    "add_to_cart": "Add to Bag",
+    "sold_out": "Sold Out",
+    "unavailable": "Unavailable",
+    "size": "Size",
+    "free_shipping": "Free shipping & returns",
+    "you_may_also_like": "You May Also Like",
+    "view_all": "View All"
+  },
+  "contact": {
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message",
+      "post_success": "Thank you — we'll be in touch shortly.",
+      "subject_general": "General Inquiry",
+      "subject_order": "Order Support",
+      "subject_press": "Press & Wholesale",
+      "subject_careers": "Careers"
+    }
+  },
+  "newsletter": {
+    "heading": "Stay Close to {{ shop_name }}",
+    "email_placeholder": "Email address",
+    "subscribe": "Subscribe",
+    "success": "Thank you — you're on the list."
+  },
+  "404": {
+    "title": "Page Not Found",
+    "subtext": "The page you're looking for doesn't exist.",
+    "link": "Back to Home"
+  }
+}

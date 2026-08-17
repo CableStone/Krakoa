@@ -1,0 +1,65 @@
+<section class="shop-intro">
+  {%- if section.settings.eyebrow != blank -%}<div class="shop-eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+  <h1 class="serif shop-title">{{ section.settings.heading | default: collection.title }}</h1>
+</section>
+
+{%- if section.blocks.size > 0 -%}
+  <div class="shop-filters" data-filter-group="#CollectionGrid-{{ section.id }}">
+    <button type="button" data-filter="all" class="active">All</button>
+    {%- for block in section.blocks -%}
+      <button type="button" data-filter="{{ block.settings.tag | downcase | replace: ' ', '-' }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</button>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div class="product-grid" id="CollectionGrid-{{ section.id }}">
+    {%- for product in collection.products -%}
+      {% render 'product-card', product: product %}
+    {%- endfor -%}
+  </div>
+  <p class="empty-state" data-empty-state hidden>No products match that filter yet.</p>
+
+  {%- if paginate.pages > 1 -%}
+    <nav class="shop-filters" style="padding-top:0">
+      {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr; Previous</a>{%- endif -%}
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+      {%- endfor -%}
+      {%- if paginate.next -%}<a href="{{ paginate.next.url }}">Next &rarr;</a>{%- endif -%}
+    </nav>
+  {%- endif -%}
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Two Collections" },
+    { "type": "text", "id": "heading", "label": "Heading override" },
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 }
+  ],
+  "blocks": [
+    {
+      "type": "filter",
+      "name": "Filter",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Choshen Collection" },
+        { "type": "text", "id": "tag", "label": "Matches product tag", "default": "choshen" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection grid",
+      "blocks": [
+        { "type": "filter", "settings": { "label": "Choshen Collection", "tag": "choshen" } },
+        { "type": "filter", "settings": { "label": "Tzadik Him", "tag": "tzadik" } },
+        { "type": "filter", "settings": { "label": "Tees", "tag": "tees" } },
+        { "type": "filter", "settings": { "label": "Knitwear", "tag": "knitwear" } },
+        { "type": "filter", "settings": { "label": "Outerwear", "tag": "outerwear" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

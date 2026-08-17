@@ -1,0 +1,15 @@
+<section class="quote-block">
+  <blockquote class="serif">&ldquo;{{ section.settings.quote }}&rdquo;</blockquote>
+  {%- if section.settings.citation != blank -%}<cite>{{ section.settings.citation }}</cite>{%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Quote",
+  "settings": [
+    { "type": "textarea", "id": "quote", "label": "Quote", "default": "We wanted clothing that carries something — the twelve stones of the Choshen, and the faces of the tzadikim who came before us." },
+    { "type": "text", "id": "citation", "label": "Citation", "default": "Founder & Creative Director" }
+  ],
+  "presets": [{ "name": "Quote" }]
+}
+{% endschema %}

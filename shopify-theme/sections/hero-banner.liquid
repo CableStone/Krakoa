@@ -1,0 +1,37 @@
+{%- style -%}
+  #HeroBanner-{{ section.id }} { position: relative; width: 100%; height: {{ section.settings.height }}px; }
+  #HeroBanner-{{ section.id }} .hero-banner-scrim {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(rgba(20,21,44,.15), rgba(43,58,143,.5) 55%, rgba(43,58,143,.85));
+  }
+  #HeroBanner-{{ section.id }} .hero-banner-title {
+    position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 64px; pointer-events: none; text-align: center;
+  }
+  #HeroBanner-{{ section.id }} .hero-banner-title span {
+    font-family: 'Cormorant Garamond', serif; font-size: 64px; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.35);
+  }
+  @media (max-width: 900px) {
+    #HeroBanner-{{ section.id }} { height: {{ section.settings.height_mobile }}px; }
+    #HeroBanner-{{ section.id }} .hero-banner-title span { font-size: 40px; }
+  }
+{%- endstyle -%}
+<section id="HeroBanner-{{ section.id }}">
+  {% render 'media-or-placeholder', image: section.settings.image, caption: section.settings.placeholder_caption, on_indigo: true, sizes: '100vw' %}
+  <div class="hero-banner-scrim"></div>
+  <div class="hero-banner-title"><span class="serif">{{ section.settings.heading }}</span></div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero banner (full-bleed)",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "placeholder_caption", "label": "Placeholder caption", "default": "Atelier — the workshop, wide shot" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Atelier" },
+    { "type": "range", "id": "height", "label": "Height (desktop, px)", "min": 320, "max": 800, "step": 20, "default": 640 },
+    { "type": "range", "id": "height_mobile", "label": "Height (mobile, px)", "min": 240, "max": 600, "step": 20, "default": 420 }
+  ],
+  "presets": [{ "name": "Hero banner (full-bleed)" }]
+}
+{% endschema %}

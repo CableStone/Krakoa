@@ -1,0 +1,60 @@
+<div class="cart-page">
+  <h1 class="serif">Your Bag</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <p class="empty-state" style="padding:0 0 40px;text-align:left">Your bag is empty. <a href="{{ routes.all_products_collection_url }}" class="link-underline">Continue shopping</a></p>
+  {%- else -%}
+    {%- form 'cart', cart -%}
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for item in cart.items -%}
+            <tr>
+              <td class="cart-row-media">
+                <div class="cart-line-media">
+                  {% render 'media-or-placeholder', image: item.image, caption: item.product_title %}
+                </div>
+              </td>
+              <td>
+                <a href="{{ item.url }}">{{ item.product_title }}</a>
+                {%- if item.variant_title and item.variant_title != 'Default Title' -%}
+                  <div class="cart-line-variant">{{ item.variant_title }}</div>
+                {%- endif -%}
+              </td>
+              <td class="money">{{ item.price | money }}</td>
+              <td>
+                <input type="number" min="0" name="updates[{{ item.key }}]" value="{{ item.quantity }}"
+                       style="width:56px;border:1px solid rgba(43,58,143,.25);padding:6px;text-align:center">
+              </td>
+              <td class="money">{{ item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <div class="cart-summary">
+        <div class="cart-subtotal-row">
+          <span>Subtotal</span>
+          <span class="money">{{ cart.total_price | money }}</span>
+        </div>
+        <button type="submit" name="update" class="link-underline" style="border:none;background:none;cursor:pointer;text-align:center">Update Bag</button>
+        <button type="submit" name="checkout" class="btn-solid-indigo">Check Out</button>
+      </div>
+    {%- endform -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": []
+}
+{% endschema %}

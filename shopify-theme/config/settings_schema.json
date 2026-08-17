@@ -1,0 +1,67 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Lyons of Judah",
+    "theme_version": "1.0.0",
+    "theme_author": "Lyons of Judah",
+    "theme_documentation_url": "https://shopify.dev/docs/storefronts/themes",
+    "theme_support_email": "hello@lyonsofjudah.com"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand palette"
+      },
+      {
+        "type": "color",
+        "id": "color_indigo",
+        "label": "Indigo (primary)",
+        "default": "#2b3a8f"
+      },
+      {
+        "type": "color",
+        "id": "color_cream",
+        "label": "Cream (background)",
+        "default": "#e9e5db"
+      },
+      {
+        "type": "color",
+        "id": "color_panel",
+        "label": "Panel (card background)",
+        "default": "#f2efe6"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Max page width",
+        "min": 1200,
+        "max": 1800,
+        "step": 50,
+        "unit": "px",
+        "default": 1600
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Add to cart behavior",
+        "options": [
+          { "value": "drawer", "label": "Open cart drawer" },
+          { "value": "page", "label": "Go to cart page" }
+        ],
+        "default": "drawer"
+      }
+    ]
+  }
+]

@@ -1,0 +1,36 @@
+<footer class="site-footer">
+  <div>{{ section.settings.copyright_text }}</div>
+  <div class="footer-links">
+    {%- for link in section.settings.menu.links -%}
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    {%- endfor -%}
+    {%- if section.settings.instagram_url != blank -%}
+      <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">Instagram</a>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Footer menu",
+      "default": "footer"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "© 2026 Lyons of Judah. Paris."
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,62 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-split",
+      "settings": {
+        "placeholder_caption": "Hero — Tzadik Him portrait tee, look 01",
+        "eyebrow": "No. 01 — Tzadik Him",
+        "heading": "The faces, worn close.",
+        "text": "Hand-drawn portraits of the tzadikim on heavyweight cotton. Twelve pieces, printed in small runs, made to be worn every day.",
+        "button_label": "Shop the Collection",
+        "button_url": "/collections/all"
+      }
+    },
+    "featured": {
+      "type": "featured-products",
+      "settings": {
+        "heading": "Two Collections, One House",
+        "text": "The Choshen Collection reads the twelve tribes in stone and color. Tzadik Him carries the faces of the tzadikim. Both cut to layer into what you already wear."
+      }
+    },
+    "categories": {
+      "type": "category-tiles",
+      "blocks": {
+        "choshen": {
+          "type": "tile",
+          "settings": { "label": "Choshen — the twelve stones", "link": "/collections/choshen" }
+        },
+        "tzadik": {
+          "type": "tile",
+          "settings": { "label": "Tzadik Him — the portraits", "link": "/collections/tzadik-him" }
+        },
+        "everyday": {
+          "type": "tile",
+          "settings": { "label": "Everyday — tees & knits", "link": "/collections/all" }
+        }
+      },
+      "block_order": ["choshen", "tzadik", "everyday"]
+    },
+    "atelier-split": {
+      "type": "split-media-text",
+      "settings": {
+        "image_position": "left",
+        "copy_style": "indigo",
+        "placeholder_caption": "Tzadik Him — portrait tee, worn",
+        "eyebrow": "Tzadik Him",
+        "heading": "Twelve stones. Nine hands.",
+        "text": "Every Lyons of Judah piece is drawn, cut, and finished in our own workshop, in runs small enough to check by hand.",
+        "link_label": "See Tzadik Him",
+        "link_url": "/pages/about"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "style": "dark",
+        "heading": "Join the List",
+        "text": "Collection drops, atelier notes, and first access to limited runs."
+      }
+    }
+  },
+  "order": ["hero", "featured", "categories", "atelier-split", "newsletter"]
+}
